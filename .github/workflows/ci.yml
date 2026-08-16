@@ -1,0 +1,53 @@
+name: CI
+
+# This repository holds specification documents, not application source. CI
+# therefore guards the two things that can silently rot: the integrity rules the
+# database design depends on, and the cross-references between the documents.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  schema:
+    name: Schema invariants
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Report SQLite version
+        # The schema relies on partial indices (SQLite >= 3.8.0). Logging the
+        # version makes a future environment-related failure obvious at a glance.
+        run: python3 -c "import sqlite3; print('SQLite', sqlite3.sqlite_version)"
+
+      - name: Validate schema integrity rules
+        # Executes db/schema.sql and asserts that the invariants the design
+        # depends on are enforced by SQLite itself. Exits non-zero on any
+        # regression, so a migration cannot silently drop a constraint.
+        run: python3 db/validate_schema.py
+
+  docs:
+    name: Document cross-references
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Check relative links and heading anchors
+        run: python3 .github/scripts/check_docs_links.py
