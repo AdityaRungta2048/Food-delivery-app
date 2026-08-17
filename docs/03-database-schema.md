@@ -1,9 +1,10 @@
 # 3. Database Design
 
-Full DDL: [`db/schema.sql`](../db/schema.sql). Verification harness:
-[`db/validate_schema.py`](../db/validate_schema.py) — executes the DDL and asserts that the
-15 integrity rules the architecture depends on are enforced by SQLite itself, not by
-application code. Run it in CI on every schema change.
+Full DDL: [`db/schema.sql`](../db/schema.sql). Verification suite:
+[`SchemaInvariantsTest`](../tools/verification/src/test/kotlin/blueprint/verification/SchemaInvariantsTest.kt)
+— executes the DDL against a real SQLite engine and asserts that the 15 integrity rules the
+architecture depends on are enforced by SQLite itself, not by application code. It runs in CI
+on every change via `./gradlew :tools:verification:test`.
 
 ## 3.1 Governing Principles
 

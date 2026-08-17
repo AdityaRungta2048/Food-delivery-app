@@ -4,9 +4,11 @@ A design-and-architecture specification for a native Android food-delivery appli
 built on **Kotlin + XML + SQL**, covering user authentication, multi-order management,
 and cash-on-delivery (COD) workflows.
 
-> This repository contains **specification documents only** — no production source code.
-> All environment-specific values are written as placeholders (`[DATABASE_NAME]`,
-> `[API_ENDPOINT]`, `[APP_NAME]`, …) and must be resolved during implementation.
+> This repository contains **specification documents only** — no application source code.
+> The one exception is `tools/verification`, a Kotlin test suite that proves the SQL schema
+> enforces what these documents claim it does. All environment-specific values are written as
+> placeholders (`[DATABASE_NAME]`, `[API_ENDPOINT]`, `[APP_NAME]`, …) and must be resolved
+> during implementation.
 
 ## Document Index
 
@@ -17,6 +19,18 @@ and cash-on-delivery (COD) workflows.
 | 3 | [docs/03-database-schema.md](docs/03-database-schema.md) | Entity-relationship model, table-by-table rationale, indexing and migration policy |
 | 4 | [docs/04-feature-logic-flows.md](docs/04-feature-logic-flows.md) | Step-by-step logic flows for authentication, multi-cart/multi-order handling, and COD settlement |
 | 5 | [db/schema.sql](db/schema.sql) | Complete SQLite DDL (tables, constraints, indices, triggers, views) |
+| 6 | [tools/verification](tools/verification) | Kotlin test suite that executes the DDL and asserts the schema's integrity rules, plus the document cross-reference check |
+
+## Verifying the specification
+
+```
+./gradlew :tools:verification:test
+```
+
+Runs two suites against a real SQLite engine: `SchemaInvariantsTest` executes
+[db/schema.sql](db/schema.sql) and asserts the 15 integrity rules the design depends on, and
+`DocumentLinksTest` checks that every relative link and heading anchor in these documents
+resolves. Both run in CI on every push and pull request.
 
 ## Scope Boundaries
 

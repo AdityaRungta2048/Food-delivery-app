@@ -492,7 +492,7 @@ and the check is a simple count over `v_active_orders WHERE payment_method = 'CA
   ENFORCED IN SQL (trg_cash_requires_delivery):
     collection_status may become 'COLLECTED' only when the parent order is
     OUT_FOR_DELIVERY or DELIVERED. Cash cannot be marked collected for an
-    order that was never dispatched — verified in db/validate_schema.py.
+    order that was never dispatched — verified by SchemaInvariantsTest.
 ```
 
 ### 4.3.3 Client-side responsibilities
@@ -580,7 +580,7 @@ reaches checkout — a client-side check is an explanation, never an enforcement
 
 | Phase | Scope | Exit criteria |
 |-------|-------|---------------|
-| 1 — Foundation | Modules, DI, Room + `schema.sql`, networking, design system, `validate_schema.py` in CI | App builds; DB migrates; all schema invariants pass |
+| 1 — Foundation | Modules, DI, Room + `schema.sql`, networking, design system, `SchemaInvariantsTest` in CI | App builds; DB migrates; all schema invariants pass |
 | 2 — Identity | Phone/OTP, token storage and rotation, session resolution, address CRUD | A user can sign in, rotate tokens, and add an address |
 | 3 — Discovery | Home feed, search, restaurant detail, menu with options | Catalog browsable offline from cache |
 | 4 — Cart | Multi-cart, customiser, re-validation, pricing engine | N parallel carts survive process death |
